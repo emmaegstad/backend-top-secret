@@ -3,7 +3,6 @@ const setup = require('../data/setup');
 const request = require('supertest');
 const app = require('../lib/app');
 const UserService = require('../lib/services/UserService');
-const { signIn } = require('../lib/services/UserService');
 
 const mockUser = {
   firstName: 'Minnie',
@@ -46,7 +45,7 @@ describe('backend-top-secret routes', () => {
     });
   });
 
-  it.only('returns 401 when non-existent user signs in', async () => {
+  it('returns 401 when non-existent user signs in', async () => {
     const agent = request.agent(app);
     const { email, password } = mockUser;
     const res = await agent
@@ -56,6 +55,18 @@ describe('backend-top-secret routes', () => {
     expect(res.body).toEqual({
       message: 'Invalid email/password.',
       status: 401,
+    });
+  });
+
+  it.only('DELETE route logs out user', async () => {
+    await UserService.create(mockUser);
+    const { email, password } = mockUser;
+    await request(app).post('/api/v1/users/sessions').send({ email, password });
+    const res = await request(app).delete('/api/v1/users/sessions');
+
+    expect(res.body).toEqual({
+      success: true,
+      message: 'Signed out successfully!',
     });
   });
 });
