@@ -58,11 +58,12 @@ describe('backend-top-secret routes', () => {
     });
   });
 
-  it.only('DELETE route logs out user', async () => {
+  it('DELETE route logs out user', async () => {
+    const agent = request.agent(app);
     await UserService.create(mockUser);
     const { email, password } = mockUser;
-    await request(app).post('/api/v1/users/sessions').send({ email, password });
-    const res = await request(app).delete('/api/v1/users/sessions');
+    await agent.post('/api/v1/users/sessions').send({ email, password });
+    const res = await agent.delete('/api/v1/users/sessions');
 
     expect(res.body).toEqual({
       success: true,
