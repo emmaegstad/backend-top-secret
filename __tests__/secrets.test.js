@@ -46,7 +46,13 @@ describe('backend-top-secret routes', () => {
     const { email, password } = mockUser;
     await agent.post('/api/v1/users/sessions').send({ email, password });
 
-    const expected = [];
+    const expected = [
+      {
+        title: 'This is a secret!',
+        description: '( (  )',
+        createdAt: expect.any(String),
+      },
+    ];
     const res = await agent.get('/api/v1/secrets');
 
     expect(res.body).toEqual(expected);
